@@ -1,0 +1,22 @@
+{
+  "products": {
+    "data": [
+      {
+        "id": 1,     
+        "name": "RTX 3060"
+      },
+      {
+        "id": 2,
+        "name": "RTX 3060 TI"                                                                        
+      },
+      {
+        "id": 3,    
+        "name": "RTX 3070"                                                                    
+      },
+      {
+        "id": 4,    
+        "name": "RTX 3070 TI"                                                                    
+      }
+    ]
+  }
+}
