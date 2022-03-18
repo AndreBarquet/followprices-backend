@@ -2,7 +2,25 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('config');
 const consign = require('consign');
-const cors = require('cors')
+const cors = require('cors');
+
+const corsOpts = {
+  origin: '*',
+  methods: [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE'
+  ],
+
+  allowedHeaders: [
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'X-Requested-With'
+  ],
+  optionsSuccessStatus: 200,
+};
 
 module.exports = () => {
   const app = express();
@@ -14,7 +32,7 @@ module.exports = () => {
   app.use(bodyParser.json());
 
   // CORS
-  app.use(cors())
+  app.use(cors(corsOpts))
 
   // ENDPOINTS
   consign({ cwd: 'api' })
