@@ -1,6 +1,5 @@
 {
-  "products": {
-    "data": [
+  "products": [
       {
         "id": 1,     
         "name": "RTX 3060"
@@ -17,6 +16,5 @@
         "id": 4,    
         "name": "RTX 3070 TI"                                                                    
       }
-    ]
-  }
+    ]  
 }
