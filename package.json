@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server"
+    "start": "set PORT=8080 && nodemon server.js",
+    "create-db": "node index.js"
   },
   "keywords": [],
   "author": "",
