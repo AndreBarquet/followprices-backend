@@ -1,4 +1,7 @@
-// const { getOffsetByPageNumber, exists } = require('../../utils/utils');
+const { getPagination, getPagingData, getOrder } = require('../../utils/queryUtils');
+const { Op } = require('@sequelize/core');
+const { exists } = require('../../utils/utils');
+
 
 module.exports = app => {
   const { productsTable } = require('../../models/dbTables');
@@ -6,17 +9,18 @@ module.exports = app => {
 
   // Get all products list
   controller.getAll = (req, res) => {
-    // const limit = exists(req.query.size) ? parseInt(req.query.size) : undefined;
-    const filters = {
-      // where: {...},
-      // order: [...],
-      offset: 0, //getOffsetByPageNumber(req.query.page, limit),
-      limit: 1
-    }
-    console.log("TESTEEEEEE", req.query);
+    const where = { [Op.and]: [] };
 
-    productsTable.findAll(filters).then((response) => {
-      res.status(200).json(response);
+    if (exists(req.query.name)) where.name = { [Op.like]: `%${req.query.name}%` };
+    if (exists(req.query.description)) where.description = { [Op.like]: `%${req.query.description}%` };
+    if (exists(req.query.typeId)) where[Op.and].push({ typeId: req.query.typeId });
+
+    // Oder field must be ASC or DESC
+    const order = getOrder(req.query.field, req.query.order);
+    const filters = { where, order, ...getPagination(req.query.page, req.query.size) }
+
+    productsTable.findAndCountAll(filters).then((response) => {
+      res.status(200).json(getPagingData(response, req.query.page, req.query.size));
     }).catch(err => {
       console.log("ERROR...:", err);
       res.status(500).json({ error: 'Ocorreu um erro ao buscar a lista de produtos' })
