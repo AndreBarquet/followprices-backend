@@ -6,4 +6,4 @@ const productsTable = database.define(products.name, products.columns)
 const typesTable = database.define(types.name, types.columns)
 productsTable.belongsTo(typesTable, { foreignKey: 'typeId', targetKey: 'id' })
 
-module.exports = { productsTable };
+module.exports = { productsTable, typesTable };
