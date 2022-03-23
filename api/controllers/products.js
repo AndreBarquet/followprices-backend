@@ -1,11 +1,11 @@
 
 module.exports = app => {
-  const productsDB = require('../../models/productsTable');
+  const { productsTable } = require('../../models/dbTables');
   const controller = {};
 
   // Get all products list
   controller.getAll = (req, res) => {
-    productsDB.findAll().then((response) => {
+    productsTable.findAll().then((response) => {
       res.status(200).json(response);
     }).catch(err => console.log("FIND ALL ERROR...:", err))
   };
@@ -13,7 +13,7 @@ module.exports = app => {
   // Get product by id
   controller.getById = (req, res) => {
     const seqQuery = { where: { id: req.params.id } }
-    productsDB.findAll(seqQuery).then((response) => {
+    productsTable.findAll(seqQuery).then((response) => {
       res.status(200).json(response);
     }).catch(err => console.log("FIND ALL ERROR...:", err))
   };
@@ -27,7 +27,7 @@ module.exports = app => {
     //   typeId: req.body.cardType,
     // };
 
-    productsDB.create({ ...req.body }).then((response) => {
+    productsTable.create({ ...req.body }).then((response) => {
       res.status(200).json({ name: response.name, description: response.description });
     }).catch(err => res.status(500).json({ error: 'Ocorreu um erro ao inserir a placa de video' }))
   };
