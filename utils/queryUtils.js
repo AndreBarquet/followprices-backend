@@ -6,7 +6,7 @@ function getPagination(pageNumber, sizeNumber) {
   const page = parseInt(pageNumber) - 1;
   const size = parseInt(sizeNumber);
 
-  const limit = size ? +size : 3;
+  const limit = size ? + size : 3;
   const offset = page ? page * limit : 0;
   return { limit, offset };
 };

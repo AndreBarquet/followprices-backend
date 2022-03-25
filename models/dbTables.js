@@ -4,6 +4,8 @@ const types = require('./types');
 
 const productsTable = database.define(products.name, products.columns)
 const typesTable = database.define(types.name, types.columns)
+const pricesTable = database.define(types.name, types.columns)
 productsTable.belongsTo(typesTable, { foreignKey: 'typeId', targetKey: 'id' })
+pricesTable.belongsTo(productsTable, { foreignKey: 'productId', targetKey: 'id' })
 
-module.exports = { productsTable, typesTable };
+module.exports = { productsTable, typesTable, pricesTable };

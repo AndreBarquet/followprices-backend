@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-const products = {
+const prices = {
   name: 'products',
   columns: {
     id: {
@@ -9,19 +9,23 @@ const products = {
       allowNull: false,
       primaryKey: true
     },
-    name: {
-      type: Sequelize.STRING,
+    date: {
+      type: Sequelize.DATE,
       allowNull: false
     },
-    description: {
-      type: Sequelize.STRING,
+    inCashValue: {
+      type: Sequelize.DOUBLE,
       allowNull: false
     },
-    typeId: {
+    inTermValue: {
+      type: Sequelize.DOUBLE,
+      allowNull: false
+    },
+    productId: {
       type: Sequelize.INTEGER,
       allowNull: false
-    }
+    },
   }
 }
 
-module.exports = products;
+module.exports = prices;
