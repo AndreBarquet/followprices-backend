@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const prices = {
-  name: 'products',
+  name: 'prices',
   columns: {
     id: {
       type: Sequelize.INTEGER,

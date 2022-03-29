@@ -25,27 +25,6 @@ module.exports = app => {
     })
   };
 
-  controller.getAllShort = (req, res) => {
-    const fieldsToSelect = { attributes: ["id", "type"] }
-    typesTable.findAll(fieldsToSelect).then((response) => {
-      res.status(200).json(response);
-    }).catch(err => {
-      console.log("ERROR...:", err);
-      res.status(500).json({ error: 'Ocorreu um erro ao buscar a lista de tipos' })
-    })
-  };
-
-  // Get type by id
-  controller.getById = (req, res) => {
-    const seqQuery = { where: { id: req.params.id } }
-    typesTable.findAll(seqQuery).then((response) => {
-      res.status(200).json(response);
-    }).catch(err => {
-      console.log("ERROR...:", err);
-      res.status(500).json({ error: 'Ocorreu ao buscar o tipo pelo id' })
-    })
-  };
-
   // Insert new type
   controller.insert = (req, res) => {
     const body = { ...req.body };
