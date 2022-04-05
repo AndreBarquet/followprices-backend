@@ -9,4 +9,7 @@ const pricesTable = database.define(prices.name, prices.columns)
 productsTable.belongsTo(typesTable, { foreignKey: 'typeId', targetKey: 'id' })
 pricesTable.belongsTo(productsTable, { foreignKey: 'productId', targetKey: 'id' })
 
+// productsTable.hasMany(typesTable, { onDelete: "cascade" })
+// pricesTable.hasMany(productsTable, { onDelete: "cascade" })
+
 module.exports = { productsTable, typesTable, pricesTable };
