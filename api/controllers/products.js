@@ -18,7 +18,7 @@ module.exports = app => {
     // Mesmo que inner join (com required true), se for false seria um left join (porque ai pegaria os valores da tabela de produtos, que nao tivessem relação com tipos)
     // o campo attributes, é para especificar qual campo especifico da tabela que foi definida no 'model' que voce quer que traz
     const include = [
-      { model: typesTable, required: true/*, attributes: ["type"]*/ }
+      { model: typesTable, required: true, attributes: ["description", "type"] }
     ]
 
     // Oder field must be ASC or DESC

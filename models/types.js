@@ -8,7 +8,6 @@ const types = {
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
-      delete: 'onCascade',
     },
     type: {
       type: Sequelize.STRING,

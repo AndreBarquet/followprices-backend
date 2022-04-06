@@ -9,14 +9,9 @@ module.exports = app => {
 
   // Get all prices list
   controller.getAll = (req, res) => {
-    const where = {
-      [Op.and]: [
-        { productId: req.query.productId }
-      ]
-    };
+    const where = { [Op.and]: [{ productId: req.query.productId }] };
 
     if (exists(req.query.date)) where[Op.and].push({ date: new Date((req.query.date)).getTime() });
-
     if (exists(req.query.initialDate) && exists(req.query.finalDate)) {
       const initialDate = new Date((req.query.initialDate)).getTime();
       const finalDate = new Date((req.query.finalDate)).getTime()

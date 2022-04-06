@@ -11,7 +11,9 @@ module.exports = app => {
   controller.getAll = (req, res) => {
     const where = { [Op.and]: [] };
 
-    if (exists(req.query.name)) where.name = { [Op.like]: `%${req.query.type}%` };
+    if (exists(req.query.description)) where.description = { [Op.like]: `%${req.query.description}%` };
+    if (exists(req.query.type)) where.type = { [Op.like]: req.query.type }
+
 
     // Oder field must be ASC or DESC
     const order = getOrder(req.query.field, req.query.order);
@@ -19,6 +21,24 @@ module.exports = app => {
 
     typesTable.findAndCountAll(filters).then((response) => {
       res.status(200).json(getPagingData(response, req.query.page, req.query.size));
+    }).catch(err => {
+      console.log("ERROR...:", err);
+      res.status(500).json({ error: 'Ocorreu um erro ao buscar a lista de tipos' })
+    })
+  };
+
+  // Get all without pagination
+  controller.getShort = (req, res) => {
+    const where = { [Op.and]: [] };
+
+    if (exists(req.query.type)) where.type = { [Op.like]: req.query.type }
+
+    // Oder field must be ASC or DESC
+    const order = getOrder(req.query.field, req.query.order);
+    const filters = { where, order, }
+
+    typesTable.findAll(filters).then((response) => {
+      res.status(200).json(response);
     }).catch(err => {
       console.log("ERROR...:", err);
       res.status(500).json({ error: 'Ocorreu um erro ao buscar a lista de tipos' })
