@@ -7,9 +7,14 @@ const types = {
       type: Sequelize.INTEGER,
       autoIncrement: true,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      delete: 'onCascade',
     },
     type: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    description: {
       type: Sequelize.STRING,
       allowNull: false
     }
