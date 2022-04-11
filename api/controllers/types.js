@@ -14,7 +14,6 @@ module.exports = app => {
     if (exists(req.query.description)) where.description = { [Op.like]: `%${req.query.description}%` };
     if (exists(req.query.type)) where.type = { [Op.like]: req.query.type }
 
-
     // Oder field must be ASC or DESC
     const order = getOrder(req.query.field, req.query.order);
     const filters = { where, order, ...getPagination(req.query.page, req.query.size) }
