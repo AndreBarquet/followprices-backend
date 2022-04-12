@@ -15,6 +15,10 @@ const products = {
     },
     description: {
       type: Sequelize.STRING,
+      allowNull: true
+    },
+    store: {
+      type: Sequelize.STRING,
       allowNull: false
     },
     typeId: {

@@ -15,15 +15,11 @@ module.exports = app => {
     if (exists(req.query.description)) where.description = { [Op.like]: `%${req.query.description}%` };
     if (exists(req.query.typeId)) where[Op.and].push({ typeId: req.query.typeId });
 
-    // Mesmo que inner join (com required true), se for false seria um left join (porque ai pegaria os valores da tabela de produtos, que nao tivessem relação com tipos)
-    // o campo attributes, é para especificar qual campo especifico da tabela que foi definida no 'model' que voce quer que traz
-    const include = [
-      { model: typesTable, required: true, attributes: ["id", "description"] }
-    ]
+    const typeFieldsToSelect = [{ model: typesTable, required: true, attributes: ["id", "description"] }]
 
     // Oder field must be ASC or DESC
     const order = getOrder(req.query.field, req.query.order);
-    const filters = { where, include, order, ...getPagination(req.query.page, req.query.size) }
+    const filters = { where, include: typeFieldsToSelect, order, ...getPagination(req.query.page, req.query.size) }
 
     productsTable.findAndCountAll(filters).then((response) => {
       res.status(200).json(getPagingData(response, req.query.page, req.query.size));
@@ -34,8 +30,13 @@ module.exports = app => {
   };
 
   controller.getAllShort = (req, res) => {
-    const fieldsToSelect = { attributes: ["id", "name", "description", "typeId"] }
-    productsTable.findAll(fieldsToSelect).then((response) => {
+    const where = { [Op.and]: [] };
+    if (exists(req.query.typeId)) where[Op.and].push({ typeId: req.query.typeId });
+
+    const fieldsToSelect = ["id", "name", "description", "typeId"];
+    const filters = { where, attributes: fieldsToSelect };
+
+    productsTable.findAll(filters).then((response) => {
       res.status(200).json(response);
     }).catch(err => {
       console.log("ERROR...:", err);
@@ -57,12 +58,6 @@ module.exports = app => {
   // Insert new product
   controller.insert = (req, res) => {
     const body = { ...req.body };
-    // const body = {
-    //   name: req.body.cardName,
-    //   price: req.body.price,
-    //   description: req.body.description,
-    //   typeId: req.body.cardType,
-    // };
 
     productsTable.create(body).then((response) => {
       res.status(200).json({ name: response.name, description: response.description });
