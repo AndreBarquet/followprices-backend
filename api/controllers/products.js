@@ -1,6 +1,6 @@
 const { getPagination, getPagingData, getOrder } = require('../../utils/queryUtils');
 const { Op } = require('@sequelize/core');
-const { exists } = require('../../utils/utils');
+const { exists, notExists } = require('../../utils/utils');
 
 
 module.exports = app => {
@@ -29,6 +29,46 @@ module.exports = app => {
     })
   };
 
+  // Get grouped By type
+  controller.getGroupedByType = (req, res) => {
+    const fieldsToSelect = ["id", "name", "description", "typeId"];
+    const typeFieldsToSelect = [{ model: typesTable, required: true, attributes: ["id", "type", "description"] }]
+
+    const filters = { attributes: fieldsToSelect, include: typeFieldsToSelect, order: [['typeId', 'ASC']] };
+
+    productsTable.findAll(filters).then((response) => {
+      if (notExists(response)) return res.status(200).json({ error: 'Não há dados' });
+
+      const responseMapped = {};
+      let lastTypeId = null;
+
+      const addDiferentType = (currentType, productMapped) => {
+        lastTypeId = productMapped?.typeId;
+        responseMapped[currentType?.type] = {
+          label: currentType?.description,
+          items: [productMapped]
+        }
+      }
+
+      response.forEach(currentProduct => {
+        const currentType = currentProduct?.type;
+
+        if (currentProduct?.typeId !== lastTypeId) {
+          addDiferentType(currentType, currentProduct);
+          return;
+        }
+
+        responseMapped[currentType?.type].items.push(currentProduct);
+      })
+
+      res.status(200).json(responseMapped);
+    }).catch(err => {
+      console.log("ERROR...:", err);
+      res.status(500).json({ error: 'Ocorreu um erro ao buscar a lista de produtos' })
+    })
+  };
+
+  // Get Short
   controller.getAllShort = (req, res) => {
     const where = { [Op.and]: [] };
     if (exists(req.query.typeId)) where[Op.and].push({ typeId: req.query.typeId });
