@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
-const products = {
-  name: 'products',
+const setups = {
+  name: 'setups',
   columns: {
     id: {
       type: Sequelize.INTEGER,
@@ -17,11 +17,7 @@ const products = {
       type: Sequelize.STRING,
       allowNull: true
     },
-    typeId: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    }
   }
 }
 
-module.exports = products;
+module.exports = setups;
