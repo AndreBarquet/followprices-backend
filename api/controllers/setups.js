@@ -1,6 +1,7 @@
 const { getOrder, getPagination, getPagingData } = require('../../utils/queryUtils');
-const { Op } = require('@sequelize/core');
+const { Op, QueryTypes } = require('@sequelize/core');
 const { exists, notExists } = require('../../utils/utils');
+const sequelize = require('../../config/database');
 
 
 module.exports = app => {
@@ -59,6 +60,81 @@ module.exports = app => {
     })
   };
 
+  controller.getAvailableDates = (req, res) => {
+    if (notExists(req.params.id)) {
+      res.status(500).json({ error: 'Id do setup não informado' })
+      return;
+    }
+
+    const query = 'select date from prices pri ' +
+      'inner join products prd on prd.id = pri.productId ' +
+      `inner join setupitems sti on prd.id = sti.productId and sti.setupId = ${req.params.id} ` +
+      'group by date;';
+
+    sequelize.query(query, { type: QueryTypes.SELECT }, { raw: true }).then((response) => {
+      res.status(200).json(response.map(currentResult => currentResult?.date));
+    }).catch(err => {
+      console.log("ERROR...:", err);
+      res.status(500).json({ error: 'Ocorreu ao buscar as datas disponiveis deste setup' })
+    })
+  };
+
+  controller.getSetupDetailsByDate = (req, res) => {
+    if (notExists(req.params.id)) {
+      res.status(500).json({ error: 'Id do setup não informado' });
+      return;
+    }
+
+    if (notExists(req.query.date)) {
+      res.status(500).json({ error: 'Data não informada' });
+      return;
+    }
+
+    const query = 'select name, prd.description as description, tp.description as type, tp.type as typeEnum, productQty, date, store, inCashValue*productQty as inCashValue, inTermValue*productQty as inTermValue from products prd ' +
+      `inner join prices pri on prd.id = pri.productId and pri.date = ${req.query.date}` +
+      'inner join types tp on prd.typeId = tp.id ' +
+      `inner join setupitems sti on prd.id = sti.productId and sti.setupId = ${req.params.id};`;
+
+    sequelize.query(query, { type: QueryTypes.SELECT }, { raw: true }).then((response) => {
+      if (notExists(response) || response.length <= 0) {
+        res.status(500).json({ error: 'Não há dados do setup para esta data' })
+        return;
+      }
+
+      res.status(200).json(response);
+    }).catch(err => {
+      console.log("ERROR...:", err);
+      res.status(500).json({ error: 'Ocorreu um erro ao buscar os detalhes deste setup' })
+    })
+  };
+
+  controller.getLatestDetails = (req, res) => {
+    if (notExists(req.params.id)) {
+      res.status(500).json({ error: 'Id do setup não informado' });
+      return;
+    }
+
+    const query = 'select name, prd.description as description, tp.description as type, tp.type as typeEnum, productQty, date, store, inCashValue*productQty as inCashValue, inTermValue*productQty as inTermValue from products prd ' +
+      'inner join ( ' +
+      '   select id, max(date) as date, store, inCashValue, inTermValue, productId ' +
+      '   from prices ' +
+      '   group by productId ' +
+      ') pri on prd.id = pri.productId ' +
+      'inner join types tp on prd.typeId = tp.id ' +
+      `inner join setupitems sti on prd.id = sti.productId and sti.setupId = ${req.params.id};`;
+
+    sequelize.query(query, { type: QueryTypes.SELECT }, { raw: true }).then((response) => {
+      if (notExists(response) || response.length <= 0) {
+        res.status(500).json({ error: 'Não há dados do setup para esta data' })
+        return;
+      }
+
+      res.status(200).json(response);
+    }).catch(err => {
+      console.log("ERROR...:", err);
+      res.status(500).json({ error: 'Ocorreu um erro ao buscar os detalhes deste setup' })
+    })
+  };
 
   return controller;
 }
