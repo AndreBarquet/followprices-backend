@@ -97,7 +97,7 @@ module.exports = app => {
 
     sequelize.query(query, { type: QueryTypes.SELECT }, { raw: true }).then((response) => {
       if (notExists(response) || response.length <= 0) {
-        res.status(500).json({ error: 'Não há dados do setup para esta data' })
+        res.status(500).json({ error: 'Não há detalhes do setup para esta data' })
         return;
       }
 
@@ -125,7 +125,7 @@ module.exports = app => {
 
     sequelize.query(query, { type: QueryTypes.SELECT }, { raw: true }).then((response) => {
       if (notExists(response) || response.length <= 0) {
-        res.status(500).json({ error: 'Não há dados do setup para esta data' })
+        res.status(500).json({ error: 'Não há detalhes para este setup' })
         return;
       }
 
@@ -135,6 +135,38 @@ module.exports = app => {
       res.status(500).json({ error: 'Ocorreu um erro ao buscar os detalhes deste setup' })
     })
   };
+
+  controller.getDetailsEvolution = (req, res) => {
+    if (notExists(req.params.id)) {
+      res.status(500).json({ error: 'Id do setup não informado' });
+      return;
+    }
+
+    const query = 'select prd.id as productId, name, prd.description as description, tp.description as type, tp.type as typeEnum, productQty, date, store, inCashValue*productQty as inCashValue, inTermValue*productQty as inTermValue from products prd ' +
+      'inner join prices pri on prd.id = pri.productId ' +
+      'inner join types tp on prd.typeId = tp.id ' +
+      `inner join setupitems sti on prd.id = sti.productId and sti.setupId = ${req.params.id} ` +
+      'group by date, name ' +
+      'order by type;';
+
+    sequelize.query(query, { type: QueryTypes.SELECT }, { raw: true }).then((response) => {
+      if (notExists(response) || response.length <= 0) {
+        res.status(500).json({ error: 'Não há detalhes para este setup' })
+        return;
+      }
+
+      const responseMapped = {};
+      response.forEach(currentProduct => {
+        if (notExists(responseMapped[currentProduct?.typeEnum])) responseMapped[currentProduct?.typeEnum] = [currentProduct];
+        else responseMapped[currentProduct?.typeEnum].push(currentProduct)
+      });
+      res.status(200).json(responseMapped);
+    }).catch(err => {
+      console.log("ERROR...:", err);
+      res.status(500).json({ error: 'Ocorreu um erro ao buscar os detalhes deste setup' })
+    })
+  };
+
 
   return controller;
 }
